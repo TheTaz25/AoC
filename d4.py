@@ -4,8 +4,6 @@ import re
 data = open('./data/4', 'r')
 passports = data.read().split('\n\n')
 
-# ecl:oth pid:874577361 iyr:2010 eyr:2021 hgt:160cm hcl:#c0946f byr:1959
-
 class Passport:
   def __init__(self, rawPassport: str):
     self.data = dict()
