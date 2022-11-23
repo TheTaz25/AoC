@@ -1,5 +1,4 @@
 # https://adventofcode.com/2021/day/1
-import sys
 
 def prepareTask():
   data = open('./Y2021/D1/input', 'r')
