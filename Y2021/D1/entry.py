@@ -13,8 +13,13 @@ def executeTask1(dataList):
       increases = increases + 1
     previous = entry
 
-  print(increases)
+  print("The value increases", increases, "times")
+
+def executeTask2(dataList):
+  windows = lambda L, n: [L[i:i+n] for i in range(len(L) - n + 1)]
+  executeTask1([sum(x) for x in windows(dataList, 3)])
 
 if __name__ == '__main__':
   dataList = prepareTask()
   executeTask1(dataList)
+  executeTask2(dataList)
