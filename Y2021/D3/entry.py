@@ -1,16 +1,16 @@
 # https://adventofcode.com/2021/day/3
 
 def prepareTask():
-  data = open('./Y2021/D3/input', 'r')
-  return [list(x) for x in data.read().splitlines()]
+  raw = open('./Y2021/D3/input', 'r')
+  return [list(line) for line in raw.read().splitlines()]
 
 def binaryConverter(binaryData):
-  exp = 0
+  exponent = 0
   result = 0
 
   for bit in binaryData:
-    result = result + ((2 ** exp) * bit)
-    exp = exp + 1
+    result = result + ((2 ** exponent) * bit)
+    exponent = exponent + 1
   return result
   
 def flipBits(binaryData):
@@ -33,7 +33,7 @@ def calculateSubmarinePowerConsumption(diagnosticData: list[list[str]]):
 
   gammaRate = binaryConverter(condensedDiagnosticData)
   epsilonRate = binaryConverter(flipBits(condensedDiagnosticData))
-  print(gammaRate * epsilonRate)
+  print("Power consumption is:", gammaRate * epsilonRate)
 
 if __name__ == '__main__':
   diagnosticReport = prepareTask()
