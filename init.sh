@@ -18,11 +18,8 @@ function getCommentForLang {
     py)
       echo $PY_COMMENT
     ;;
-    js | ts)
-      echo $JS_COMMENT
-    ;;
     *)
-      return 1
+      echo $JS_COMMENT
     ;;
   esac
 }
