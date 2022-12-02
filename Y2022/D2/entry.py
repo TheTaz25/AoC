@@ -23,25 +23,12 @@ def loose(type: str):
   return getFormValue(type)
 
 def getScore(opponent: str, player: str):
-  if opponent == 'A': # Rock
-    if player == 'Y': # Paper
-      return won(player)
-    if player == 'X': # Rock
-      return draw(player)
-    if player == 'Z': # Scissors
-      return loose(player)
-  if opponent == 'B': # Paper
-    if player == 'Y': # Paper
-      return draw(player)
-    if player == 'X': # Rock
-      return loose(player)
-    if player == 'Z': # Scissors
-      return won(player)
-  if player == 'Y': # Paper
-    return loose(player)
-  if player == 'X': # Rock
-    return won(player)
-  return draw(player)
+  lookup = {
+    'AX': draw, 'AY': won, 'AZ': loose,
+    'BX': loose, 'BY': draw, 'BZ': won,
+    'CX': won, 'CY': loose, 'CZ': draw,
+  }
+  return lookup[opponent+player](player)
 
 def getTotalScore(guide: list[list[str]]):
   calculatedScores = [getScore(opponent, player) for opponent, player in guide]
