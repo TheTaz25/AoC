@@ -48,24 +48,12 @@ def getTotalScore(guide: list[list[str]]):
   return sum(calculatedScores)
 
 def getReaction(opponent: str, outcome: str):
-  if opponent == 'A' and outcome == 'X': # rock, lose
-    return 'Z'
-  if opponent == 'A' and outcome == 'Y': # rock, draw
-    return 'X'
-  if opponent == 'A' and outcome == 'Z': # rock, win
-    return 'Y'
-  if opponent == 'B' and outcome == 'X': # paper, lose
-    return 'X'
-  if opponent == 'B' and outcome == 'Y': # paper, draw
-    return 'Y'
-  if opponent == 'B' and outcome == 'Z': # paper, win
-    return 'Z'
-  if opponent == 'C' and outcome == 'X': # scissors, lose
-    return 'Y'
-  if opponent == 'C' and outcome == 'Y': # scissors, draw
-    return 'Z'
-  if opponent == 'C' and outcome == 'Z': # scissors, win
-    return 'X'
+  lookup = {
+    'AX': 'Z', 'AY': 'X', 'AZ': 'Y',
+    'BX': 'X', 'BY': 'Y', 'BZ': 'Z',
+    'CX': 'Y', 'CY': 'Z', 'CZ': 'X',
+  }
+  return lookup[opponent + outcome]
 
 
 def getCounterMeasures(guide: list[list[str]]):
