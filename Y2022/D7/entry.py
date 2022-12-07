@@ -99,8 +99,8 @@ def prepareFSForUpdate(fs: FileSystem):
   eligableFolders = [folder for folder in fs.getFolders() if folder.size >= minimumSpaceRequired]
   eligableFolders.sort(key = lambda a : a.size)
   bestFolderToDelete = eligableFolders[0]
-  print(f"The best folder has a size of {bestFolderToDelete.size}")
-  print(bestFolderToDelete)
+
+  return bestFolderToDelete
 
 if __name__ == '__main__':
   cmdOutput = prepareTask()
@@ -108,4 +108,7 @@ if __name__ == '__main__':
   smallFoldersCombinedSize = getSumOfAllFoldersBelow100k(fs)
 
   print(f"Small folders account for {smallFoldersCombinedSize}")
-  prepareFSForUpdate(fs)
+  bestFolderToDelete = prepareFSForUpdate(fs)
+  print(f"The best folder has a size of {bestFolderToDelete.size}")
+  print(bestFolderToDelete)
+
