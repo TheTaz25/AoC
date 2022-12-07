@@ -1,98 +1,111 @@
 # https://adventofcode.com/2022/day/7
 
-
-class Directory:
-  def __init__(self, name: str):
+class Blob:
+  def __init__(self, type: str, name: str, location: list[str]):
+    self.type = type
     self.name = name
+    self.location = location.copy()
+    if (type == 'dir'):
+      self.location.append(name)
     self.size = 0
-    self.contents: list[object] = []
-  
-  def __iadd__(self, other: object):
-    self.size += other.getSize()
-    self.contents.append(other)
-    return self
 
-  def getSize(self):
-    return self.size
+  def setSize(self, newSize: int):
+    self.size = newSize
 
-  def getSubDirectory(self, subDirectoryName):
-    [subDirectory] = [obj for obj in self.contents if obj.name == subDirectoryName]
-    if subDirectory != None:
-      return subDirectory
-    else:
-      raise Exception(f"No subdirectory {subDirectoryName} found!")
+  def isFile(self) -> bool:
+    return self.type == 'file'
 
-  def getContents(self, tabs = 0):
-    allContents = ("  " * tabs) + " ".join(["-", self.name, "(dir)", "\n"])
-    allContents += "".join([content.getContents(tabs + 1) for content in self.contents])
-    return allContents
+  def isDir(self) -> bool:
+    return self.type == 'dir'
 
-class File:
-  def __init__(self, name: str, size: int):
-    self.name = name
-    self.size = size
+  def addSize(self, other: int):
+    self.size += other
 
-  def getSize(self):
-    return self.size
+  def isInDirectoryPath(self, path: list[str]):
+    dirPath = "/".join(path)
+    filePath = "/".join(self.location) or "/"
+    if (dirPath in filePath):
+      return True
+    return False
 
-  def getContents(self, tabs: int):
-    return ("  " * tabs) + " ".join(["-", self.name, f"(file, size={str(self.size)})", "\n" ])
+  def __repr__(self):
+    location = "/".join(self.location) or "/"
+    return f"Blob({self.type}, {self.size}): {self.name or 'root'} in {location}\n"
 
 class FileSystem:
-  def __init__(self):
-    self.struct = Directory('/')
-    self.current = ['/']
-
-  def executeCommand(self, command: str):
-    cmd = command.split(' ')
-    if cmd[1] == 'cd':
-      self.changeDirectory(cmd[2])
+  def __init__(self) -> None:
+    self.diskSpace = 70000000
+    self.pwd = ['']
+    self.contents: list[Blob] = [Blob("dir", "", self.pwd.copy())]
   
-  def changeDirectory(self, into: str):
-    if into == '/':
-      self.current = []
-    elif into == '..' and len(self.current) == 0:
-      return
-    elif into == '..':
-      self.current.pop()
+  def cd(self, param: str):
+    if param == '/':
+      self.pwd = ['']
+    elif param == '..':
+      self.pwd.pop()
     else:
-      self.current.append(into)
-  
-  def ls(self, entry: str):
-    (dirOrFileSize, fileName) = entry.split(' ')
-    if (dirOrFileSize == 'dir'):
-      self.addDirToCurrentPath(fileName)
-    else:
-      self.addFileToCurrentPath(int(dirOrFileSize), fileName)
-  
-  def addDirToCurrentPath(self, dirName: str):
-    currentDirectory = self.struct
-    for path in self.current:
-      currentDirectory = currentDirectory.getSubDirectory(path)
-    currentDirectory += Directory(dirName)
+      self.pwd.append(param)
 
-  def addFileToCurrentPath(self, fileSize: int, fileName: str):
-    currentDirectory = self.struct
-    for path in self.current:
-      currentDirectory = currentDirectory.getSubDirectory(path)
-    currentDirectory += File(fileName, fileSize)
+  def addFile(self, fileName: str, fileSize: int):
+    newFile = Blob('file', fileName, self.pwd.copy())
+    newFile.setSize(fileSize)
+    self.contents.append(newFile)
 
-  def __str__(self) -> str:
-    return self.struct.getContents()
+  def addFolder(self, folderName: str):
+    self.contents.append(Blob('dir', folderName, self.pwd.copy()))
+
+  def calculateFolderSizes(self):
+    for file in [file for file in self.contents if file.isFile()]:
+      for dir in [dir for dir in self.contents if dir.isDir()]:
+        if file.isInDirectoryPath(dir.location):
+          dir.addSize(file.size)
+
+  def getFolders(self):
+    return [folder for folder in self.contents if folder.isDir()]
+
+  def getUnusedSpace(self):
+    return self.diskSpace - self.contents[0].size
 
 def prepareTask():
   data = open('./Y2022/D7/input')
   return data.read().splitlines()
 
-def printDirectory(commands: list[str]):
+def executeFileSystemCommands(commands: list[str]) -> FileSystem:
   fs = FileSystem()
   for command in commands:
-    if (command.startswith('$')):
-      fs.executeCommand(command)
-    else:
-      fs.ls(command)
-  print(fs)
+    params = command.split(' ')
+    if params[0] == '$' and params[1] == 'cd':
+      fs.cd(params[2])
+    elif params[0] != '$' and params[0] == 'dir':
+      fs.addFolder(params[1])
+    elif params[0] != '$' and params[0] != 'dir':
+      fs.addFile(params[1], int(params[0]))
+  return fs
+
+def getSumOfAllFoldersBelow100k(fs:FileSystem):
+  fs.calculateFolderSizes()
+
+  smallFolders = fs.getFolders()
+  return sum([folder.size for folder in smallFolders if folder.size <= 100000])
+
+def prepareFSForUpdate(fs: FileSystem):
+  currentUnusedSpace = fs.getUnusedSpace()
+  updateSize = 30000000
+  minimumSpaceRequired = updateSize - currentUnusedSpace
+
+  print(f"Currently unused space is {currentUnusedSpace} bytes, but update requires {updateSize} bytes")
+  print(f"Detecting best folder to delete in order to free up space of minimum {minimumSpaceRequired}")
+
+  eligableFolders = [folder for folder in fs.getFolders() if folder.size >= minimumSpaceRequired]
+  eligableFolders.sort(key = lambda a : a.size)
+  bestFolderToDelete = eligableFolders[0]
+  print(f"The best folder has a size of {bestFolderToDelete.size}")
+  print(bestFolderToDelete)
 
 if __name__ == '__main__':
   cmdOutput = prepareTask()
-  printDirectory(cmdOutput)
+  fs = executeFileSystemCommands(cmdOutput)
+  smallFoldersCombinedSize = getSumOfAllFoldersBelow100k(fs)
+
+  print(f"Small folders account for {smallFoldersCombinedSize}")
+  prepareFSForUpdate(fs)
