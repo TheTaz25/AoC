@@ -40,9 +40,43 @@ def countVisibleTrees(treeDict: dict[int, list[int]], treeMap: list[str]):
         visibleTreeCount += 1
   return visibleTreeCount
 
+def inRange(pos: int, higher: int):
+  return pos >= 0 and pos < higher
+
+def getSingleScenicScore(treeMap: list[str], x: int, y: int, h: int, func):
+  score = 0
+  nextX, nextY = func(x, y)
+  while inRange(nextX, len(treeMap[0])) and inRange(nextY, len(treeMap)):
+    score += 1
+    pos = int(treeMap[nextX][nextY])
+    if (pos >= h):
+      return score
+    nextX, nextY = func(nextX, nextY)
+  return score
+
+def getScenicScoresForTree(treeMap: list[str], x: int, y: int, h: int) -> list[int]:
+  northernScore = getSingleScenicScore(treeMap, x, y, h, lambda x, y: [x - 1, y])
+  easternScore = getSingleScenicScore(treeMap, x, y, h, lambda x, y: [x, y + 1])
+  southernScore = getSingleScenicScore(treeMap, x, y, h, lambda x, y: [x + 1, y])
+  westernScore = getSingleScenicScore(treeMap, x, y, h, lambda x, y: [x, y - 1])
+  return [northernScore, easternScore, southernScore, westernScore]
+
+def getHighestScenicScore(treeMap: list[str]):
+  bestScenicScore = 0
+  for xIndex, row in enumerate(treeMap):
+    for yIndex, col in enumerate(row):
+      northern, eastern, southern, western = getScenicScoresForTree(treeMap, xIndex, yIndex, int(col))
+      calculatedScore = northern * eastern * southern * western
+      if (calculatedScore > bestScenicScore):
+        bestScenicScore = calculatedScore
+  return bestScenicScore
+
 if __name__ == '__main__':
   treeMap = prepareTask()
   formattedTreeMap = formatTreeMap(treeMap)
 
   visibleTreeCount = countVisibleTrees(formattedTreeMap, treeMap)
   print(f"{visibleTreeCount} trees are visible!")
+
+  bestScenicScore = getHighestScenicScore(treeMap)
+  print(f"The best scenic score is {bestScenicScore}")
