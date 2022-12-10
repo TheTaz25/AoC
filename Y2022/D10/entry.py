@@ -13,12 +13,20 @@ class CentralProcessingUnit:
     self.operation = None
     self.line = -1
     self.endOfExecution = False
+    self.pixels = []
+
+  def printPixel(self):
+    if abs(self.cycle % 40 - self.x - 1) <= 1:
+      self.pixels.append('#')
+    else:
+      self.pixels.append('.')
 
   def preOperation(self):
     self.cycleState = 'dur'
 
   def durOperation(self):
     self.cycleState = 'post'
+    self.printPixel()
     self.operation.execute(self)
 
   def postOperation(self):
@@ -51,11 +59,18 @@ class CentralProcessingUnit:
     elif self.cycleState == 'post':
       self.postOperation()
 
+  def printImage(self):
+    print("".join(self.pixels[0:40]))
+    print("".join(self.pixels[40:80]))
+    print("".join(self.pixels[80:120]))
+    print("".join(self.pixels[120:160]))
+    print("".join(self.pixels[160:200]))
+    print("".join(self.pixels[200:240]))
+
   def executeProgramAndGetSignalProbes(self, prober):
     probes = []
     self.getNextLine()
     while not self.endOfExecution:
-      print(f"{self.cycleState} | {self.cycle}")
       if prober(self.cycleState, self.cycle):
         probes.append((self.cycle, self.x))
       self.tick()
@@ -99,6 +114,7 @@ def bootStrap():
   for cycle, probe in collected:
     summedUpProbes += cycle * probe
   print("The sum of all probes is", summedUpProbes)
+  cpu.printImage()
 
 if __name__ == "__main__":
   bootStrap()
