@@ -30,6 +30,9 @@ class Item:
 
   def getBored(self):
     self.worryLevel = self.worryLevel // 3
+
+  def applyLcm(self, lcm: int):
+    self.worryLevel %= lcm
 class Monkey:
   def __init__(self, rawDefinition: str) -> None:
     definitionPieces = rawDefinition.splitlines()
@@ -44,7 +47,10 @@ class Monkey:
     for item in self.items:
       self.insepctedItems += 1
       item.applyOperation(self.itemOperation)
-      item.getBored()
+      if business.boredom:
+        item.getBored()
+      else:
+        item.applyLcm(business.lcm)
       throwItemToMonkey = self.test.executeTest(item.worryLevel)
       business.throwItemToMonkey(throwItemToMonkey, item)
     self.items.clear()
@@ -55,13 +61,18 @@ class Monkey:
   def printInspectionCount(self):
     print(f"Monkey {self.id} inspected items {self.insepctedItems} times.")
 class MonkeyBusiness:
-  def __init__(self) -> None:
+  def __init__(self, boredom: bool) -> None:
     self.monkeys: list[Monkey] = []
+    self.boredom = boredom
 
   def setup(self, rawMonkeyData: str):
     monkeys = rawMonkeyData.split('\n\n')
+    lcm = 1
     for monkeyData in monkeys:
-      self.monkeys.append(Monkey(monkeyData))
+      monkey = Monkey(monkeyData)
+      lcm *= monkey.test.divisor
+      self.monkeys.append(monkey)
+    self.lcm = lcm
 
   def doRounds(self, amount: int):
     for _ in range(amount):
@@ -87,10 +98,7 @@ class MonkeyBusiness:
 def getOperationLambda(char: str):
   if char == '*':
     return lambda x, y: x * y
-  if char == '+':
-    return lambda x, y: x + y
-  else:
-    return lambda x, y: x - y
+  return lambda x, y: x + y
 
 def parseMonkeyId(data: str):
   return int(data[:-1].split(' ')[1])
@@ -117,14 +125,26 @@ def prepareTask():
   data = open('./Y2022/D11/input2', 'r')
   return data.read()
 
-def main():
-  monkeyData = prepareTask()
-  monkeyBusiness = MonkeyBusiness()
+def calculate20RoundsWithBoredom(monkeyData: str):
+  monkeyBusiness = MonkeyBusiness(True)
   monkeyBusiness.setup(monkeyData)
   monkeyBusiness.doRounds(20)
-  monkeyBusiness.printMonkeyInspections()
+  # monkeyBusiness.printMonkeyInspections()
   monkeyBusinessLevel = monkeyBusiness.getLevel()
   print(f"After 20 rounds, the monkey business level is {monkeyBusinessLevel}")
+
+def calculate10kRoundsWithoutBoredom(monkeyData: str):
+  monkeyBusiness = MonkeyBusiness(False)
+  monkeyBusiness.setup(monkeyData)
+  monkeyBusiness.doRounds(10000)
+  # monkeyBusiness.printMonkeyInspections()
+  monkeyBusinessLevel = monkeyBusiness.getLevel()
+  print(f"After 10000 rounds, the monkey business level is {monkeyBusinessLevel}")
+
+def main():
+  monkeyData = prepareTask()
+  calculate20RoundsWithBoredom(monkeyData)
+  calculate10kRoundsWithoutBoredom(monkeyData)  
 
 if __name__ == '__main__':
   main()
