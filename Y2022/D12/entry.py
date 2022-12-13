@@ -57,24 +57,31 @@ class HeightMap:
     self.distanceTravelled = 0
 
   def getLocationsWithHeight(self, height: int):
-    print(f"retreive locations for height {chr(height + 97)} or lower in proximity to previous height")
+    print(f"retreive locations for height {chr(height + 97)}")
     return [loc for loc in self.map if loc.height == height]
 
   def calculateBestRouteToNextHeight(self):
     print(f"Current Height: {chr(self.currentHeight + 97)}")
+    locationsToNextHeight = []
     # Where are we now? -> SELF
     # On what height are we? -> SELF
     # Get list of current heights
-    currentHeightMap = self.getLocationsWithHeight(self.currentHeight)
-    print(f"Found {len(currentHeightMap)} locations")
-    # print(currentHeightMap)
-    # Calculate all distances on this height-list
-    mapDistancesToPosition(currentHeightMap, self.location)
-    # print(currentHeightMap)
-    # check which heights are adjacent to the next height
-    reachableFields = [height for height in currentHeightMap if height.distanceToStart != None]
-    # print(reachableFields)
-    locationsToNextHeight = self.getAllLocationsToNextHeight(reachableFields)
+    while len(locationsToNextHeight) == 0:
+      currentHeightMap = self.getLocationsWithHeight(self.currentHeight)
+      print(f"Found {len(currentHeightMap)} locations")
+      if 'i' == chr(self.currentHeight + 97):
+        print(currentHeightMap)
+      # print(currentHeightMap)
+      # Calculate all distances on this height-list
+      mapDistancesToPosition(currentHeightMap, self.location)
+      # print(currentHeightMap)
+      # check which heights are adjacent to the next height
+      reachableFields = [height for height in currentHeightMap if height.distanceToStart != None]
+      # print(reachableFields)
+      locationsToNextHeight = self.getAllLocationsToNextHeight(reachableFields)
+      print(len(locationsToNextHeight))
+      if len(locationsToNextHeight) == 0:
+        self.currentHeight -= 1
     # Choose the cheapest height
     print(f"remove {len(reachableFields)} entries from the map!")
     [self.map.remove(height) for height in reachableFields]
@@ -89,19 +96,12 @@ class HeightMap:
   def getAllLocationsToNextHeight(self, currentHeights: list[Location]):
     nextHeights = self.getLocationsWithHeight(self.currentHeight + 1)
     print(f"Found {len(nextHeights)} locations")
+    if 'i' == chr(self.currentHeight + 97):
+        print(nextHeights)
     hits: list[Location] = []
     for height in nextHeights:
       # print(f"checking {height}")
       hits += height.findNeighboursOf(currentHeights)
-    return hits
-
-  def getAllLocationsToPreviousHeight(self, currentHeights: list[Location]):
-    previousHeights = self.getLocationsWithHeight(self.currentHeight - 1)
-    print(f"Found {len(previousHeights)} locations")
-    hits: list[Location] = []
-    for height in currentHeights:
-      hits += height.findNeighboursOf(previousHeights)
-    print(hits)
     return hits
 
   def travelToEnd(self):
