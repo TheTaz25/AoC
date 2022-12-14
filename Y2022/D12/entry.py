@@ -10,6 +10,14 @@ class Location:
     self.y = y
     self.distanceToStart = None
     self.height = h
+    self.char = chr(h+97)
+    self.visited = False
+
+  def markVisited(self):
+    self.visited = True
+
+  def getChar(self):
+    return self.char
 
   def __str__(self) -> str:
     return f"Location({self.x},{self.y}) - height: {chr(self.height + 97)} - distance: {self.distanceToStart}"
@@ -49,12 +57,26 @@ def mapDistancesToPosition(heightMap: list[Location], current: Location):
     allCurrents += neighbours
 
 class HeightMap:
-  def __init__(self, start: Location, end: Location, heightMap: list[Location]) -> None:
+  def __init__(self, start: Location, end: Location, heightMap: list[Location], rows: int, cols: int) -> None:
     self.location = Location(start.x, start.y, start.height)
     self.target = Location(end.x, end.y, end.height)
     self.map = heightMap.copy()
     self.currentHeight = start.height
     self.distanceTravelled = 0
+    self.rows = rows
+    self.cols = cols
+
+  def __str__(self) -> str:
+    ret = ""
+    transformedSet = dict[tuple[int, int], Location]()
+    for loc in self.map:
+      transformedSet[(loc.x, loc.y)] = loc
+    for y in range(self.rows):
+      for x in range(self.cols):
+        loc = transformedSet.get((x, y))
+        ret += loc.getChar()
+      ret += f'\n'
+    return ret
 
   def getLocationsWithHeight(self, height: int):
     print(f"retreive locations for height {chr(height + 97)}")
@@ -83,8 +105,7 @@ class HeightMap:
       if len(locationsToNextHeight) == 0:
         self.currentHeight -= 1
     # Choose the cheapest height
-    print(f"remove {len(reachableFields)} entries from the map!")
-    [self.map.remove(height) for height in reachableFields]
+    [height.markVisited() for height in reachableFields]
     # print(locationsToNextHeight)
     bestNextLocation = min(locationsToNextHeight, key=attrgetter('distanceToStart'))
     print(f"Travel to x:{bestNextLocation.x}//y:{bestNextLocation.y}")
@@ -107,6 +128,7 @@ class HeightMap:
   def travelToEnd(self):
     while self.currentHeight != 25:
       self.calculateBestRouteToNextHeight()
+      print(self)
     # self.calculateBestRouteToEnd()
 
 def resolveMap(heightMap: list[list[str]]) -> HeightMap:
@@ -114,10 +136,10 @@ def resolveMap(heightMap: list[list[str]]) -> HeightMap:
   start = None
   end = None
   ordA = ord('a')
-  # lines = 0
-  # cols = len(line)
+  cols = 0
+  rows = len(heightMap)
   for y, line in enumerate(heightMap):
-    # lines = len(x)
+    cols = len(line)
     for x, height in enumerate(line):
       cur = None
       if (height == 'S'):
@@ -130,23 +152,7 @@ def resolveMap(heightMap: list[list[str]]) -> HeightMap:
       else:
         cur = Location(x, y, ord(height) - ordA)
       mapInstance.append(cur)
-  return HeightMap(start, end, mapInstance)
-
-def adjacentToNextHeight(cur: tuple[int, int], allNextHeights: list[tuple[int, int]]):
-  above = (cur[0] - 1, cur[1])
-  below = (cur[0] + 1, cur[1])
-  right = (cur[0], cur[1] + 1)
-  left = (cur[0], cur[1] - 1)
-  for height in allNextHeights:
-    if height == above:
-      return above
-    if height == below:
-      return below
-    if height == right:
-      return right
-    if height == left:
-      return left
-  return None
+  return HeightMap(start, end, mapInstance, rows, cols)
 
 def part1(heightMap: HeightMap):
   heightMap.travelToEnd()
