@@ -16,6 +16,7 @@ class CaveSystem:
     self.sandLocations: list[tuple[int, int]] = list()
     self.deepest: int = 0
     self.outerEdges: tuple[int, int] = (500, 500)
+    self.thereIsAFloor = False
 
   def applyCaveEdges(self, x: int, y: int):
     if y > self.deepest:
@@ -42,6 +43,8 @@ class CaveSystem:
       previous = [int(pos) for pos in point.split(',')]
 
   def nextSandLocation(self, current: tuple[int, int]):
+    if current[1] == self.deepest + 1:
+      return None
     down, downLeft, downRight = [(direction[0] + current[0], direction[1] + current[1]) for direction in [(0, 1), (-1, 1), (1, 1)]]
     if down not in self.rockFormation and down not in self.sandLocations:
       return down
@@ -59,13 +62,24 @@ class CaveSystem:
 
   def letTheSandFlow(self):
     current = self.sandSpawn
-    while current[1] < self.deepest:
-      nextPosition = self.nextSandLocation(current)
-      if nextPosition == None:
-        self.sandLocations.append(current)
-        current = self.sandSpawn
-        continue
-      current = nextPosition
+    if not self.thereIsAFloor:
+      while current[1] < self.deepest:
+        nextPosition = self.nextSandLocation(current)
+        if nextPosition == None:
+          self.sandLocations.append(current)
+          current = self.sandSpawn
+          continue
+        current = nextPosition
+    else:
+      while self.sandSpawn not in self.sandLocations:
+        nextPosition = self.nextSandLocation(current)
+        if nextPosition == None:
+          self.sandLocations.append(current)
+          print(f"Calculated {len(self.sandLocations)} blocks of sand", end='\r')
+          current = self.sandSpawn
+          continue
+        current = nextPosition
+    print("")
 
   def printCave(self):
     for line in range(0, self.deepest + 2):
@@ -82,10 +96,18 @@ class CaveSystem:
           out += '.'
       print(out)
 
+  def createFlooring(self):
+    self.thereIsAFloor = True
+
 def main(caveScan: list[str]):
   caveSystem = CaveSystem()
   caveSystem.readCaveScan(caveScan)
   caveSystem.printCave()
+  caveSystem.letTheSandFlow()
+  caveSystem.printCave()
+  unitsOfSand = len(caveSystem.sandLocations)
+  print(f"There are {unitsOfSand} Units of sand!")
+  caveSystem.createFlooring()
   caveSystem.letTheSandFlow()
   caveSystem.printCave()
   unitsOfSand = len(caveSystem.sandLocations)
