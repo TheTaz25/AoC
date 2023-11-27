@@ -1,4 +1,8 @@
 .DS_Store
 .vscode
 
+# Input files
 *input*
+
+# Rust Output
+*target*
