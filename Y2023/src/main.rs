@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use std::process;
-use Y2023::utils::input::get_task_and_data;
+use Y2023::utils::file_reader::get_task_and_data;
 fn main() {
   let meta_data = get_task_and_data();
 
