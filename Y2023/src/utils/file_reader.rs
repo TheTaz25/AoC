@@ -2,10 +2,16 @@ use std::{fs,env};
 
 use super::errors::Fault;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Meta {
-  task: String,
-  file: String,
+  pub task: String,
+  pub file: String,
+}
+
+impl Meta {
+  pub fn get_lines_from_file (&self) -> Vec<&str> {
+    self.file.split('\n').into_iter().collect()
+  }
 }
 
 pub fn get_task_and_data () -> Result<Meta, Fault> {
