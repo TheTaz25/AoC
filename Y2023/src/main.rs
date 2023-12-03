@@ -3,7 +3,7 @@
 
 use std::process;
 use Y2023::utils::{file_reader::{get_task_and_data, Meta}, errors::Fault};
-use Y2023::tasks::day1;
+use Y2023::tasks::{day1, day2};
 fn main() {
   let meta_data: Result<Meta, Fault> = get_task_and_data();
 
@@ -18,6 +18,7 @@ fn main() {
 
   let result = match meta.task.as_str() {
     "1" => day1::day_1(meta.clone()),
+    "2" => day2::day_2(meta.clone()),
     _ => panic!("Given Task number is not available")
   };
 
