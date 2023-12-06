@@ -1,56 +1,23 @@
-use crate::utils::{file_reader::Meta, errors::Fault};
+use crate::utils::{file_reader::Meta, errors::Fault, position::{Vec2D, Movable2D}};
 
 const TEST: &str = "467..114..\n...*......\n..35..633.\n......#...\n617*......\n.....+.58.\n..592.....\n......755.\n...$.*....\n.664.598..";
 
-#[derive(Debug, Copy, Clone)]
-struct Position {
-  x: i16,
-  y: i16,
-}
-
-impl Position {
-  pub fn new (x: i16, y: i16) -> Self {
-    Position { x, y }
-  }
-
-  pub fn right (&mut self) -> Self {
-    self.x += 1;
-    *self
-  }
-  pub fn left (&mut self) -> Self {
-    self.x -= 1;  
-    *self
-  }
-  pub fn down (&mut self) -> Self {
-    self.y += 1;
-    *self
-  }
-  pub fn up (&mut self) -> Self {
-    self.y -= 1;
-    *self
-  }
-
-  pub fn next_row (&mut self) {
+impl Vec2D {
+  pub fn next_row(&mut self) {
     self.x = 0;
     self.y += 1;
   }
 }
 
-impl PartialEq for Position {
-  fn eq(&self, other: &Self) -> bool {
-    self.x == other.x && self.y == other.y
-}
-}
-
 #[derive(Debug, Copy, Clone)]
 struct Number {
   value: u32,
-  start: Position,
+  start: Vec2D,
   length: u8
 }
 
 impl Number {
-  pub fn new (value: char, coordinates: Position) -> Self {
+  pub fn new (value: char, coordinates: Vec2D) -> Self {
     Number {
       value: value.to_digit(10).unwrap(),
       start: coordinates,
@@ -65,28 +32,28 @@ impl Number {
     *self
   }
 
-  pub fn has_adjacent_symbol (&mut self, symbols: &Vec<Position>) -> bool {
+  pub fn has_adjacent_symbol (&mut self, symbols: &Vec<Vec2D>) -> bool {
     let mut current = self.start;
 
-    current.up();
-    current.left();
+    current.move_up();
+    current.move_left();
     for _ in 0..=self.length {
       match symbols.into_iter().find(|&&s| s == current) {
         Some(_) => return true,
         _ => {}
       }
-      current.right();
+      current.move_right();
     }
     match symbols.into_iter().find(|&&s| s == current) {
       Some(_) => return true,
       _ => {}
     }
-    current.down();
+    current.move_down();
     match symbols.into_iter().find(|&&s| s == current) {
       Some(_) => return true,
       _ => {}
     }
-    current.down();
+    current.move_down();
     match symbols.into_iter().find(|&&s| s == current) {
       Some(_) => return true,
       _ => {}
@@ -96,13 +63,13 @@ impl Number {
         Some(_) => return true,
         _ => {}
       }
-      current.left();
+      current.move_left();
     }
     match symbols.into_iter().find(|&&s| s == current) {
       Some(_) => return true,
       _ => {}
     }
-    current.up();
+    current.move_up();
     match symbols.into_iter().find(|&&s| s == current) {
       Some(_) => return true,
       _ => {}
@@ -115,8 +82,8 @@ pub fn day_3 (_meta: Meta) -> Result<i32, Fault> {
   // let splits: Vec<&str> = TEST.split('\n').into_iter().collect();
   let splits = _meta.get_lines_from_file();
   let mut numbers: Vec<Number> = vec![];
-  let mut symbols: Vec<Position> = vec![];
-  let mut coordinates = Position::new(0, 0);
+  let mut symbols: Vec<Vec2D> = vec![];
+  let mut coordinates = Vec2D::zero();
 
   for y in 0..splits.len() {
     let line = splits[y].chars();
@@ -150,7 +117,7 @@ pub fn day_3 (_meta: Meta) -> Result<i32, Fault> {
           }
         }
       }
-      coordinates.right();
+      coordinates.move_right();
     }
     match current_number {
       Some(current) => {
