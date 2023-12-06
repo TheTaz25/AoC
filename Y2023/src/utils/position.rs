@@ -6,6 +6,10 @@ pub trait Movable2D {
   fn move_down (&mut self) -> Self;
 }
 
+pub trait Collidable2D {
+  fn get_collisions (&self) -> Vec<Vec2D>;
+}
+
 #[derive(Debug, Copy, Clone)]
 pub struct Vec2D {
   pub x: i16,
@@ -34,12 +38,12 @@ impl Movable2D for Vec2D {
   }
 
   fn move_up (&mut self) -> Self {
-    self.y += 1;
+    self.y -= 1;
     *self
   }
 
   fn move_down (&mut self) -> Self {
-    self.y -= 1;
+    self.y += 1;
     *self
   }
 }
@@ -48,4 +52,10 @@ impl PartialEq for Vec2D {
   fn eq(&self, other: &Self) -> bool {
       self.x == other.x && self.y == other.y
   }
+}
+
+pub fn do_coolide <T>(obj1: T, obj2: T) -> bool
+where
+T: Collidable2D {
+  false
 }
