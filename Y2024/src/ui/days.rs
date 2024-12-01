@@ -72,6 +72,7 @@ impl DayUI<'_> {
         SubUiResponse::None
       },
       KeyCode::Enter => SubUiResponse::SelectDay(self.day_state.selected().expect("Expected Day to be selected")),
+      KeyCode::Char('r') => SubUiResponse::RunTask,
       _ => SubUiResponse::None
     };
 

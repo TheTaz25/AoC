@@ -1,19 +1,8 @@
-use super::TaskRunner;
-
-pub struct T0 {
-  input: String
+async fn part1(data: String) -> Result<String, String> {
+  tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+  Ok(format!("{}", data))
 }
 
-impl TaskRunner for T0 {
-  fn new () -> Self {
-    Self { input: "".to_string() }
-  }
-
-  fn input(&mut self, data: String) {
-    self.input = data;
-  }
-
-  fn run(self) -> Result<String, ()> {
-    Ok("".to_string())
-  }
+pub async fn execute_day(input: String) -> Result<String, String> {
+  part1(input).await
 }
