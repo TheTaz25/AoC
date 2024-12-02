@@ -1,13 +1,13 @@
 use std::iter::zip;
 
-use crate::utils::string::split_by_space;
+use crate::utils::string::split_by_space_to_tuple;
 
 use super::TaskData;
 
 fn convert_lines_into_usize_tuple(lines: Vec<&str>) -> (Vec<usize>, Vec<usize>) {
   lines
   .into_iter()
-  .map(|datum| split_by_space(datum))
+  .map(|datum| split_by_space_to_tuple(datum))
   .map(|(first, second)| (first.parse::<usize>().unwrap(), second.parse::<usize>().unwrap()))
   .unzip()
 }

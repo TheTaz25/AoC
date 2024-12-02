@@ -2,6 +2,7 @@ use tokio::time::Instant;
 
 pub mod t0;
 pub mod t1;
+pub mod t2;
 
 #[derive(Clone)]
 pub struct TaskData {
@@ -47,5 +48,9 @@ impl TaskData {
       self.result_task_1.clone().unwrap_or("Not Calculated".to_string()),
       self.result_task_2.clone().unwrap_or("Not Calculated".to_string())
     )
+  }
+
+  pub fn get_logs(&self) -> Vec<String> {
+    self.log.clone()
   }
 }
