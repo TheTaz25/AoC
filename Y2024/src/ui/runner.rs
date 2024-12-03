@@ -2,7 +2,7 @@
 use ratatui::widgets::{Paragraph, Widget};
 use ratatui::style::Stylize;
 
-use crate::tasks::{t1, t2, TaskData};
+use crate::tasks::{t1, t2, t3, TaskData};
 
 #[derive(Clone)]
 pub struct RunnerUi {
@@ -42,6 +42,11 @@ impl RunnerUi {
       },
       Some(1) => {
         let results = t2::execute_day(data.unwrap());
+
+        self.result_data = Some(results);
+      },
+      Some(2) => {
+        let results = t3::execute_day(data.unwrap());
 
         self.result_data = Some(results);
       }
