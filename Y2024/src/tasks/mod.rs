@@ -4,6 +4,8 @@ pub mod t0;
 pub mod t1;
 pub mod t2;
 pub mod t3;
+pub mod t4;
+pub mod t4_hashmap;
 
 #[derive(Clone)]
 pub struct TaskData {
