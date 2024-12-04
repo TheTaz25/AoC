@@ -14,8 +14,18 @@ pub struct DayUI <'a>{
   days: Vec<ListItem<'a>>
 }
 
+const DAY: u8 = 4;
+
+fn get_day_case(day: u8) -> String {
+  match day {
+    n if n > DAY => format!("{} [Not implemented yet]", n),
+    4 => format!("4 (Using Hashmaps)"),
+    _ => day.to_string()
+  }
+}
+
 fn get_days() -> Vec<ListItem<'static>> {
-  (1..25).map(|day| ListItem::from(format!("Day {}", day.to_string()))).collect()
+  (1..=25).map(|day| ListItem::from(format!("Day {}", get_day_case(day)))).collect()
 }
 
 impl Default for DayUI<'_> {
