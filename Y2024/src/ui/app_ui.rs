@@ -41,9 +41,13 @@ impl Default for AppUI {
         should_exit: false,
         current_page: UIStatus::Main,
         ui_day_list: DayUI::default(),
+
         ui_data_entry: DataEntry::default(),
+
         ui_result: UiResult::default(),
+
         ui_runner: RunnerUi::default(),
+
       }
   }
 }
@@ -60,8 +64,11 @@ impl AppUI {
         if let Event::Key(key) = event::read()? {
           let response = match self.current_page {
             UIStatus::Main => self.ui_day_list.send_event(key),
+
             UIStatus::DataEntry => self.ui_data_entry.send_event(key),
+
             UIStatus::Result => self.ui_result.send_event(key),
+
             #[allow(unreachable_patterns)]
             _ => SubUiResponse::None,
           };
@@ -128,8 +135,11 @@ impl Widget for &mut AppUI {
       Self: Sized {
     let [header, main, footer] = Layout::vertical([
       Constraint::Length(2),
+
       Constraint::Fill(1),
+
       Constraint::Length(1),
+
     ]).areas(area);
 
     AppUI::render_header(self.current_page, header, buf);
@@ -167,8 +177,11 @@ impl AppUI {
   fn render_main_app(&mut self, area: Rect, buf: &mut Buffer) {
     match self.current_page {
       UIStatus::Main => self.ui_day_list.render(area, buf),
+
       UIStatus::DataEntry => self.ui_data_entry.render(area, buf),
+
       UIStatus::Result => self.ui_result.render(area, buf),
+
       #[allow(unreachable_patterns)]
       _ => AppUI::not_implemented(self.current_page, area, buf)
     }

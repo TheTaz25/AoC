@@ -8,7 +8,8 @@ fn convert_lines_into_usize_tuple(lines: Vec<&str>) -> (Vec<usize>, Vec<usize>) 
   lines
   .into_iter()
   .map(|datum| split_by_space_to_tuple(datum))
-  .map(|(first, second)| (first.parse::<usize>().unwrap(), second.parse::<usize>().unwrap()))
+  .map(|(first, second)| (first.parse::<usize>().unwrap(),
+ second.parse::<usize>().unwrap()))
   .unzip()
 }
 
@@ -19,6 +20,7 @@ fn part1(left: &Vec<usize>, right: &Vec<usize>) -> Result<String, String> {
 
   match zipped {
     Some(result) => Ok(format!("Location ID Total Distance is {}", result)),
+
     None => Err("Unable to zip, map and reduce values".to_string())
   }
 }

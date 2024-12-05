@@ -1,11 +1,13 @@
 use super::TaskData;
 
 fn part1(input: String, results: &mut TaskData) {
-  let mul_regex = regex::Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
+  let mul_regex = regex::Regex::new(r"mul\((\d{1,3}),
+(\d{1,3})\)").unwrap();
   let mut multiplications: Vec<(usize, usize)> = vec![];
 
   for (_, [num1, num2]) in mul_regex.captures_iter(input.as_str()).map(|c| c.extract()) {
-    multiplications.push((num1.parse::<usize>().unwrap(), num2.parse::<usize>().unwrap()));
+    multiplications.push((num1.parse::<usize>().unwrap(),
+ num2.parse::<usize>().unwrap()));
   }
 
   results.push_log(format!("Part 1 - Extracted {} valid multiplications", multiplications.len()));
@@ -60,7 +62,8 @@ pub fn execute_day(input: String) -> TaskData {
 
   results.mark_step(String::from("Formatting Done"));
 
-  part1(input.clone(), &mut results);
+  part1(input.clone(),
+ &mut results);
 
   results.mark_step("Task 1 - Done".to_string());
 

@@ -22,7 +22,9 @@ impl Default for DataEntry {
   fn default() -> Self {
       Self {
         content: String::from("Hallo,\ndas ist ein Test"),
+
         scroll_bar_state: ScrollbarState::new(1),
+
         scroll_state: 0,
         area_height: 1,
         max_scroll: 0,
@@ -47,13 +49,15 @@ impl Widget for &mut DataEntry {
     StatefulWidget::render(Scrollbar::new(ScrollbarOrientation::VerticalRight)
       .begin_symbol(Some("^"))
       .end_symbol(Some("v")),
+
           area, buf, &mut self.scroll_bar_state,
     )
   }
 }
 
 impl DataEntry {
-  fn paste_content(&mut self) -> Result<(), Error> {
+  fn paste_content(&mut self) -> Result<(),
+ Error> {
     let mut board = Clipboard::new()?;
     let content = String::from(board.get_text()?);
     self.content = content.trim().to_string();

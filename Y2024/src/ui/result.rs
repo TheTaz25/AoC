@@ -22,6 +22,7 @@ impl Default for UiResult {
     Self {
       data: None,
       scroll_bar_state: ScrollbarState::new(1),
+
       scroll_state: 0,
       area_height: 1,
       max_scroll: 0,
@@ -38,12 +39,17 @@ impl Widget for &mut UiResult {
     
     let [top, center, bottom] = Layout::vertical([
       Constraint::Length(3),
+
       Constraint::Length(3),
+
       Constraint::Fill(1),
+
     ]).areas(area);
     let [top_left, top_right] = Layout::horizontal([
       Constraint::Fill(1),
+
       Constraint::Fill(1),
+
     ]).areas(top);
 
     self.area_height = bottom.height as usize;
@@ -59,6 +65,7 @@ impl Widget for &mut UiResult {
           Paragraph::new(task1)
           .alignment(Alignment::Center)
           .block(Block::bordered().green().title("  Calculation Part 1  ")),
+
           top_left, buf);
 
         // Render Result - Part 2 of Day
@@ -66,6 +73,7 @@ impl Widget for &mut UiResult {
           Paragraph::new(task2)
             .alignment(Alignment::Center)
             .block(Block::bordered().green().title("  Calculation Part 2  ")),
+
             top_right, buf);
 
         // Render Some Stats (Duration between custom defined steps)
@@ -83,7 +91,9 @@ impl Widget for &mut UiResult {
           let (title, current) = checkpoints.get(slot).unwrap();
           Widget::render(
             Paragraph::new(format!("{}ms", current.duration_since(*previous).as_millis()))
-            .block(Block::bordered().yellow().title(format!("  {}  ", title))), *timeslot_chunks.get(slot - 1).unwrap(), buf
+            .block(Block::bordered().yellow().title(format!("  {}  ", title))),
+ *timeslot_chunks.get(slot - 1).unwrap(),
+ buf
           );
         }
 
@@ -91,11 +101,13 @@ impl Widget for &mut UiResult {
           Paragraph::new(logs.join("\n"))
             .block(Block::bordered().red().title("  Calculation Logs "))
             .scroll((self.scroll_state as u16, 0)),
+
             bottom, buf
         );
         StatefulWidget::render(Scrollbar::new(ScrollbarOrientation::VerticalRight)
           .begin_symbol(Some("^"))
           .end_symbol(Some("v")),
+
           bottom, buf, &mut self.scroll_bar_state,
         );
       },

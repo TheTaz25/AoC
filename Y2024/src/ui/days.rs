@@ -14,12 +14,14 @@ pub struct DayUI <'a>{
   days: Vec<ListItem<'a>>
 }
 
-const DAY: u8 = 4;
+const DAY: u8 = 5;
 
 fn get_day_case(day: u8) -> String {
   match day {
     n if n > DAY => format!("{} [Not implemented yet]", n),
+
     4 => format!("4 (Using Hashmaps)"),
+
     _ => day.to_string()
   }
 }
@@ -35,6 +37,7 @@ impl Default for DayUI<'_> {
       Self {
         day_state,
         days: get_days(),
+
       }
   }
 }
@@ -82,6 +85,7 @@ impl DayUI<'_> {
         SubUiResponse::None
       },
       KeyCode::Enter => SubUiResponse::SelectDay(self.day_state.selected().expect("Expected Day to be selected")),
+
       KeyCode::Char('r') => SubUiResponse::RunTask,
       _ => SubUiResponse::None
     };

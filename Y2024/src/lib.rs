@@ -5,5 +5,6 @@ pub mod utils;
 pub enum RunnerState {
   Ready,
   Working(String),
+
   Done((String, String))
 }

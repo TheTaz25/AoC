@@ -6,6 +6,7 @@ pub mod t2;
 pub mod t3;
 pub mod t4;
 pub mod t4_hashmap;
+pub mod t5;
 
 #[derive(Clone)]
 pub struct TaskData {
@@ -21,7 +22,8 @@ impl Default for TaskData {
       result_task_1: None,
       result_task_2: None,
       log: vec![],
-      timestamps: vec![(String::from("Start"), tokio::time::Instant::now())]
+      timestamps: vec![(String::from("Start"),
+ tokio::time::Instant::now())]
     }
   }   
 }
@@ -49,6 +51,7 @@ impl TaskData {
   pub fn get_results(&self) -> (String, String) {
     (
       self.result_task_1.clone().unwrap_or("Not Calculated".to_string()),
+
       self.result_task_2.clone().unwrap_or("Not Calculated".to_string())
     )
   }

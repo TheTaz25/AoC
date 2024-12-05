@@ -7,7 +7,9 @@ pub mod result;
 pub enum SubUiResponse {
   Exit,
   SelectDay(usize),
+
   AcceptInput(String),
+
   RunTask,
   TaskDone,
   None,
